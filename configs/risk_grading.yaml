@@ -1,0 +1,37 @@
+# 预测结果风险分级规则（可配置、可追溯）
+#
+# 用途：把模型输出的数值浓度转换成用户能看懂的辅助性风险提示。
+# 边界：这是产品内部阈值，不是官方 AQI 等级，不作为执法、停产或应急响应依据。
+# 每次分级都会随结果输出规则 id、版本和阈值，保证结论可复核。
+
+id: qiongyu-advisory-bands
+version: "2026-09-03-v1"
+unit: ug_m3
+disclaimer: 内部辅助提示阈值，不代表官方空气质量等级（AQI），不作为执法或应急响应依据。
+
+# 四档等级。thresholds 里的三个上界依次把数值划分到这四档。
+levels:
+  - key: low
+    label: 低风险
+    advice: 继续保持常规监测
+  - key: moderate
+    label: 中风险
+    advice: 复核输入数据，关注可能的污染上升
+  - key: elevated
+    label: 高风险
+    advice: 加强站点监测，并向相关人员提示
+  - key: severe
+    label: 极高风险
+    advice: 先人工复核观测与模型输入，再对外发布结论
+
+# 逐污染物三档上界（ug/m3）：<=第1个 低；<=第2个 中；<=第3个 高；更高为极高。
+thresholds:
+  "PM2.5": [35, 75, 115]
+  "PM10": [50, 150, 250]
+  "NO2": [80, 160, 240]
+  "O3": [160, 200, 300]
+
+# 页面顶部的总体等级：取焦点污染物在各站点上的聚合值再分级。
+summary:
+  focus_pollutant: "PM2.5"
+  aggregation: mean

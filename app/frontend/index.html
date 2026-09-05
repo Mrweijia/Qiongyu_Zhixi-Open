@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="穹宇智析空气质量预测工作台">
+    <meta name="theme-color" content="#071d2a">
+    <title>穹宇智析 · 空气质量预测工作台</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script defer src="/script.js">
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">跳至主要内容</a>
+    <header class="app-header">
+      <a class="brand" href="#" aria-label="穹宇智析工作台首页">
+        <span class="brand-mark">QY</span>
+        <span>
+          <strong>穹宇智析</strong>
+          <small>AIR INTELLIGENCE WORKBENCH</small>
+        </span>
+      </a>
+      <div class="header-status" role="status">
+        <i class="status-dot checking" id="statusDot">
+        </i>
+        <span id="serviceStatus">正在检查服务</span>
+      </div>
+    </header>
+    <main id="main-content" class="app-shell">
+      <aside class="rail" aria-label="工作台模块">
+        <button class="rail-item active" data-view="online" type="button">
+          <span class="rail-icon">⌁</span>
+          <span>在线预测</span>
+        </button>
+        <button class="rail-item" data-view="ingest" type="button">
+          <span class="rail-icon">⇅</span>
+          <span>数据接入</span>
+        </button>
+        <button class="rail-item" data-view="training" type="button">
+          <span class="rail-icon">◫</span>
+          <span>轻量训练</span>
+        </button>
+        <button class="rail-item" data-view="models" type="button">
+          <span class="rail-icon">◇</span>
+          <span>模型中心</span>
+        </button>
+        <button class="rail-item" data-view="developer" type="button">
+          <span class="rail-icon">›_</span>
+          <span>开发者入口</span>
+        </button>
+      </aside>
+      <div class="workspace">
+        <section class="view active" data-view-panel="online" aria-labelledby="online-title">
+          <div class="view-heading">
+            <div>
+              <p class="eyebrow">ONLINE INFERENCE / 已加载预训练模型</p>
+              <h1 id="online-title">在线预测</h1>
+              <p>上传最近连续观测数据，直接生成未来 1—3 小时多污染物预测。</p>
+            </div>
+            <button class="quiet-button" id="sampleBtn" type="button">载入合成示例数据</button>
+          </div>
+          <div class="notice info" role="note">
+            <span>i</span>
+            <p>模型不会替代官方空气质量发布。内置污染示例为合成演示数据，上传数据仅用于本次会话计算。</p>
+          </div>
+          <div class="upload-grid">
+            <div class="upload-card" id="pollutionDrop" tabindex="0" role="button" aria-describedby="pollutionMeta">
+              <input id="pollutionInput" type="file" accept=".csv,text/csv" hidden>
+              <div class="file-type">数据 A</div>
+              <div class="upload-glyph" aria-hidden="true">↑</div>
+              <h2>污染监测数据</h2>
+              <p>CSV，含 date、hour、type 与站点列</p>
+              <div class="file-meta" id="pollutionMeta">选择 pollution.csv 或将文件拖到这里</div>
+            </div>
+            <div class="upload-card" id="weatherDrop" tabindex="0" role="button" aria-describedby="weatherMeta">
+              <input id="weatherInput" type="file" accept=".csv,text/csv" hidden>
+              <div class="file-type">数据 B</div>
+              <div class="upload-glyph" aria-hidden="true">⌁</div>
+              <h2>逐小时气象数据</h2>
+              <p>CSV，含 DATE、STATION、TMP、WND 与 DEWP</p>
+              <div class="file-meta" id="weatherMeta">选择 weather.csv 或将文件拖到这里</div>
+            </div>
+          </div>
+          <section class="run-panel" aria-live="polite">
+            <div>
+              <strong id="actionTitle">等待两份数据</strong>
+              <p id="actionDetail">至少需要连续 12 小时观测，可先载入示例验证流程。</p>
+            </div>
+            <div class="run-actions">
+              <button class="link-button" id="resetBtn" type="button">重新选择</button>
+              <button class="action-button" id="predictBtn" type="button" disabled>
+                <span class="button-label">运行模型预测</span>
+                <span aria-hidden="true">→</span>
+              </button>
+            </div>
+            <div class="progress-track" aria-hidden="true">
+              <span id="progressBar">
+              </span>
+            </div>
+          </section>
+          <section class="results" id="results" hidden aria-labelledby="results-title">
+            <div class="results-top">
+              <div>
+                <p class="eyebrow">FORECAST OUTPUT / 模型直接多步输出</p>
+                <h2 id="results-title">未来三小时趋势</h2>
+              </div>
+              <a class="quiet-button" id="downloadBtn" href="#">下载 CSV</a>
+            </div>
+            <div class="horizon-tabs" role="tablist" aria-label="选择预测时段">
+              <button class="horizon-tab active" data-hour="1" role="tab" aria-selected="true">T+1 <small>小时</small>
+              </button>
+              <button class="horizon-tab" data-hour="2" role="tab" aria-selected="false">T+2 <small>小时</small>
+              </button>
+              <button class="horizon-tab" data-hour="3" role="tab" aria-selected="false">T+3 <small>小时</small>
+              </button>
+            </div>
+            <div class="result-summary">
+              <article>
+                <span>预测点</span>
+                <strong id="predictionCount">—</strong>
+                <small>站点 × 指标 × 时段</small>
+              </article>
+              <article>
+                <span>PM2.5 均值</span>
+                <strong id="pm25Average">—</strong>
+                <small>当前选择的预测时段</small>
+              </article>
+              <article>
+                <span>风险分级提示</span>
+                <strong id="riskLevel" class="risk-neutral">待计算</strong>
+                <small id="riskDetail">可配置阈值，非官方空气质量等级</small>
+              </article>
+              <article>
+                <span>数据质量</span>
+                <strong id="qualityState" class="risk-neutral">待校验</strong>
+                <small id="qualityDetail">上传后检查格式与连续性</small>
+              </article>
+            </div>
+            <div class="result-grid">
+              <article class="data-card trend-card">
+                <div class="card-top">
+                  <h3>四项污染物趋势</h3>
+                  <span id="chartHour">T+1</span>
+                </div>
+                <div class="trend-legend">
+                  <span>
+                    <i class="pm25">
+                    </i>PM2.5</span>
+                    <span>
+                      <i class="pm10">
+                      </i>PM10</span>
+                      <span>
+                        <i class="no2">
+                        </i>NO₂</span>
+                        <span>
+                          <i class="o3">
+                          </i>O₃</span>
+                        </div>
+                        <svg id="trendChart" viewBox="0 0 620 228" role="img" aria-label="预测污染物趋势图">
+                        </svg>
+                        <p class="chart-note">展示 10 个站点的均值；并非实时监测数据。</p>
+                      </article>
+                      <article class="data-card table-card">
+                        <div class="card-top">
+                          <h3>站点预测值</h3>
+                          <span>μg/m³</span>
+                        </div>
+                        <div class="table-scroll">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>站点</th>
+                                <th>PM2.5</th>
+                                <th>PM10</th>
+                                <th>NO₂</th>
+                                <th>O₃</th>
+                              </tr>
+                            </thead>
+                            <tbody id="resultsBody">
+                            </tbody>
+                          </table>
+                        </div>
+                      </article>
+                    </div>
+                  </section>
+                </section>
+                <section class="view" data-view-panel="ingest" aria-labelledby="ingest-title" hidden>
+                  <div class="view-heading">
+                    <div>
+                      <p class="eyebrow">OBSERVATION INGEST / ROLLING WINDOW</p>
+                      <h1 id="ingest-title">数据接入</h1>
+                      <p>推送最近逐小时观测，形成连续完整窗口后直接生成未来 1—3 小时预测。</p>
+                    </div>
+                    <button class="quiet-button" id="refreshWindowBtn" type="button">刷新窗口覆盖</button>
+                  </div>
+                  <div class="notice info" role="note">
+                    <span>i</span>
+                    <p>窗口数据只用于服务端滚动预测，不写入官方历史库；令牌只保存在当前浏览器会话中，并随请求发送。</p>
+                  </div>
+                  <div class="ingest-grid">
+                    <article class="data-card ingest-form-card" aria-labelledby="ingest-form-title">
+                      <div class="card-top">
+                        <h2 id="ingest-form-title">推送观测</h2>
+                        <span class="badge muted">JSON BATCH</span>
+                      </div>
+                      <label class="field-label" for="observationToken">QIONGYU_API_TOKEN</label>
+                      <input class="code-input" id="observationToken" type="password" autocomplete="off" placeholder="留空时只能查看窗口覆盖">
+                      <label class="field-label" for="observationPayload">观测 JSON 批量输入</label>
+                      <textarea class="code-textarea" id="observationPayload" spellcheck="false" placeholder='[{"time":"2026-09-03T08:00:00+08:00","station":"1335A","pollutants":{"PM2.5":20},"weather":{"tmp_C":25}}]'></textarea>
+                      <div class="ingest-actions">
+                        <button class="action-button" id="pushObservationsBtn" type="button">
+                          <span>推送观测</span>
+                          <span aria-hidden="true">→</span>
+                        </button>
+                        <button class="quiet-button" id="predictWindowBtn" type="button">使用当前窗口预测</button>
+                      </div>
+                    </article>
+                    <section class="data-card ingest-status-card" aria-labelledby="coverage-title" aria-live="polite">
+                      <div class="card-top">
+                        <h3 id="coverage-title">窗口覆盖</h3>
+                        <span class="badge pending" id="windowStatusBadge">待读取</span>
+                      </div>
+                      <dl class="coverage-list" id="windowCoverage">
+                        <div>
+                          <dt>已存小时</dt>
+                          <dd>—</dd>
+                        </div>
+                        <div>
+                          <dt>完整小时</dt>
+                          <dd>—</dd>
+                        </div>
+                        <div>
+                          <dt>连续完整小时</dt>
+                          <dd>—</dd>
+                        </div>
+                        <div>
+                          <dt>最近数据年龄</dt>
+                          <dd>—</dd>
+                        </div>
+                        <div>
+                          <dt>窗口可预测</dt>
+                          <dd>—</dd>
+                        </div>
+                      </dl>
+                      <div class="rejection-panel" id="windowRejections" hidden>
+                        <div class="card-top">
+                          <h4>拒绝记录</h4>
+                          <span class="badge error" id="windowRejectionCount">0 条</span>
+                        </div>
+                        <div class="table-scroll">
+                          <table>
+                            <thead>
+                              <tr>
+                                <th>序号</th>
+                                <th>站点</th>
+                                <th>原因</th>
+                              </tr>
+                            </thead>
+                            <tbody id="windowRejectionBody">
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                  <section class="results window-prediction" id="windowPrediction" aria-labelledby="windowPredictionTitle" hidden>
+                    <div class="results-top">
+                      <div>
+                        <p class="eyebrow">WINDOW FORECAST / ROLLING INPUT</p>
+                        <h2 id="windowPredictionTitle">窗口预测结果</h2>
+                      </div>
+                      <span class="badge completed" id="windowSourceBadge">当前观察窗口</span>
+                    </div>
+                    <div class="horizon-tabs" role="tablist" aria-label="选择窗口预测时段">
+                      <button class="window-horizon-tab active" data-window-hour="1" role="tab" aria-selected="true">T+1 <small>小时</small>
+                      </button>
+                      <button class="window-horizon-tab" data-window-hour="2" role="tab" aria-selected="false">T+2 <small>小时</small>
+                      </button>
+                      <button class="window-horizon-tab" data-window-hour="3" role="tab" aria-selected="false">T+3 <small>小时</small>
+                      </button>
+                    </div>
+                    <div class="result-summary">
+                      <article>
+                        <span>预测点</span>
+                        <strong id="windowPredictionCount">—</strong>
+                        <small>站点 × 指标 × 时段</small>
+                      </article>
+                      <article>
+                        <span>PM2.5 均值</span>
+                        <strong id="windowPm25Average">—</strong>
+                        <small>当前选择的预测时段</small>
+                      </article>
+                      <article>
+                        <span>风险分级提示</span>
+                        <strong id="windowRiskLevel" class="risk-neutral">待计算</strong>
+                        <small id="windowRiskDetail">使用后端返回规则</small>
+                      </article>
+                      <article>
+                        <span>数据来源</span>
+                        <strong id="windowDataSource">滚动观测窗口</strong>
+                        <small>不会生成可下载 CSV</small>
+                      </article>
+                    </div>
+                    <div class="result-grid">
+                      <article class="data-card trend-card">
+                        <div class="card-top">
+                          <h3>四项污染物趋势</h3>
+                          <span id="windowChartHour">T+1</span>
+                        </div>
+                        <div class="trend-legend">
+                          <span>
+                            <i class="pm25">
+                            </i>PM2.5</span>
+                            <span>
+                              <i class="pm10">
+                              </i>PM10</span>
+                              <span>
+                                <i class="no2">
+                                </i>NO₂</span>
+                                <span>
+                                  <i class="o3">
+                                  </i>O₃</span>
+                                </div>
+                                <svg id="windowTrendChart" viewBox="0 0 620 228" role="img" aria-label="窗口观测污染物预测趋势图">
+                                </svg>
+                                <p class="chart-note">展示 10 个站点的均值；预测来自最近连续完整观测窗口。</p>
+                              </article>
+                              <article class="data-card table-card">
+                                <div class="card-top">
+                                  <h3>站点预测值</h3>
+                                  <span>μg/m³</span>
+                                </div>
+                                <div class="table-scroll">
+                                  <table>
+                                    <thead>
+                                      <tr>
+                                        <th>站点</th>
+                                        <th>PM2.5</th>
+                                        <th>PM10</th>
+                                        <th>NO₂</th>
+                                        <th>O₃</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody id="windowResultsBody">
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </article>
+                            </div>
+                          </section>
+                        </section>
+                <section class="view" data-view-panel="training" aria-labelledby="training-title" hidden>
+                  <div class="view-heading">
+                    <div>
+                      <p class="eyebrow">LIGHTWEIGHT TRAINING / RIDGE MODEL</p>
+                      <h1 id="training-title">轻量训练 / 创建模型</h1>
+                      <p>用符合数据契约的 CSV 创建资源受限的 Ridge 预测模型，并与 Persistence 基线比较验证结果。</p>
+                    </div>
+                  </div>
+                  <div class="training-grid">
+                    <form class="data-card train-form" id="trainingForm">
+                      <label class="field-label" for="trainingFile">训练数据 CSV</label>
+                      <input id="trainingFile" type="file" accept=".csv,text/csv" required>
+                      <small id="trainingFileHint">仅在训练接口可用时提交。</small>
+                      <label class="field-label" for="targetSelect">目标指标</label>
+                      <select id="targetSelect" name="target">
+                        <option value="PM2.5">PM2.5</option>
+                        <option value="PM10">PM10</option>
+                        <option value="NO2">NO₂</option>
+                        <option value="O3">O₃</option>
+                      </select>
+                      <fieldset>
+                        <legend>预测时段</legend>
+                        <div class="check-row">
+                          <label>
+                            <input type="checkbox" name="horizon" value="1" checked> T+1</label>
+                            <label>
+                              <input type="checkbox" name="horizon" value="2" checked> T+2</label>
+                              <label>
+                                <input type="checkbox" name="horizon" value="3" checked> T+3</label>
+                              </div>
+                            </fieldset>
+                            <button class="action-button" id="trainBtn" type="submit">创建 Ridge 模型 <span aria-hidden="true">→</span>
+                            </button>
+                          </form>
+                          <section class="data-card job-card" aria-live="polite">
+                            <div class="card-top">
+                              <h3>任务状态</h3>
+                              <span id="trainStatusBadge" class="badge muted">未创建</span>
+                            </div>
+                            <div class="job-empty" id="jobEmpty">
+                              <span>◫</span>
+                              <p>提交 CSV 后，这里会显示 Ridge 模型任务、验证结果与模型下载入口。</p>
+                            </div>
+                            <dl class="job-details" id="jobDetails" hidden>
+                              <div>
+                                <dt>任务 ID</dt>
+                                <dd id="jobId">—</dd>
+                              </div>
+                              <div>
+                                <dt>当前状态</dt>
+                                <dd id="jobStatus">—</dd>
+                              </div>
+                              <div>
+                                <dt>更新时间</dt>
+                                <dd id="jobUpdated">—</dd>
+                              </div>
+                            </dl>
+                            <section class="metrics-panel" id="trainingMetrics" hidden>
+                              <h4>验证集指标 <span>Ridge vs Persistence</span>
+                              </h4>
+                              <div class="metrics-scroll">
+                                <table>
+                                  <thead>
+                                    <tr>
+                                      <th>时段</th>
+                                      <th>Ridge<br>MAE</th>
+                                      <th>Ridge<br>RMSE</th>
+                                      <th>Ridge<br>R²</th>
+                                      <th>Persistence<br>MAE</th>
+                                      <th>Persistence<br>RMSE</th>
+                                      <th>Persistence<br>R²</th>
+                                      <th>是否改善</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody id="metricsBody">
+                                  </tbody>
+                                </table>
+                              </div>
+                            </section>
+                            <a class="download-job" id="trainingDownload" href="#" hidden>下载训练产物 ↓</a>
+                          </section>
+                        </div>
+                        <div class="notice warning">
+                          <span>!</span>
+                          <p>训练产物仅供下载和本地使用，不会自动替换当前在线预训练模型。</p>
+                        </div>
+                      </section>
+                      <section class="view" data-view-panel="models" aria-labelledby="models-title" hidden>
+                        <div class="view-heading">
+                          <div>
+                            <p class="eyebrow">MODEL REGISTRY / 服务端模型清单</p>
+                            <h1 id="models-title">模型中心</h1>
+                            <p>查看当前服务明确返回的模型信息；不会把本地或历史状态当作线上可用模型。</p>
+                          </div>
+                          <button class="quiet-button" id="refreshModels" type="button">刷新模型列表</button>
+                        </div>
+                        <div class="model-grid" id="modelGrid" aria-live="polite">
+                          <article class="data-card model-placeholder">
+                            <span>◇</span>
+                            <h2>等待加载模型目录</h2>
+                            <p>点击“刷新模型列表”从 <code>GET /api/models</code> 读取。</p>
+                          </article>
+                        </div>
+                        <div class="notice warning">
+                          <span>!</span>
+                          <p>若服务未提供模型中心接口，页面会保留此状态，不展示未经确认的模型或指标。</p>
+                        </div>
+                      </section>
+                      <section class="view" data-view-panel="developer" aria-labelledby="developer-title" hidden>
+                        <div class="view-heading">
+                          <div>
+                            <p class="eyebrow">DEVELOPER ACCESS / API & SDK</p>
+                            <h1 id="developer-title">开发者入口</h1>
+                            <p>按现有同源 API 组织请求。生产环境请处理上传校验、异步状态和业务侧鉴权。</p>
+                          </div>
+                        </div>
+                        <div class="developer-grid">
+                          <article class="data-card api-list">
+                            <h2>接口速览</h2>
+                            <dl>
+                              <div>
+                                <dt>POST</dt>
+                                <dd>
+                                  <code>/api/upload</code>
+                                  <span>上传 pollution_file 与 weather_file</span>
+                                </dd>
+                              </div>
+                              <div>
+                                <dt>POST</dt>
+                                <dd>
+                                  <code>/api/predict</code>
+                                  <span>提交 session_id 进行推理</span>
+                                </dd>
+                              </div>
+                              <div>
+                                <dt>GET</dt>
+                                <dd>
+                                  <code>/api/health</code>
+                                  <span>检查服务与模型就绪状态</span>
+                                </dd>
+                              </div>
+                              <div>
+                                <dt>POST</dt>
+                                <dd>
+                                  <code>/api/train</code>
+                                  <span>可选：提交训练文件、目标与时段</span>
+                                </dd>
+                              </div>
+                            </dl>
+                          </article>
+                          <article class="data-card code-card">
+                            <div class="card-top">
+                              <h2>JavaScript 示例</h2>
+                              <button class="copy-button" id="copyCode" type="button">复制</button>
+                            </div>
+                            <pre id="apiCode">
+                              <code>const body = new FormData();
+                                body.append('pollution_file', pollutionFile);
+                                body.append('weather_file', weatherFile);
+
+                                const upload = await fetch('/api/upload', {
+                                method: 'POST', body
+                                }).then(r =&gt; r.json());
+
+                                const result = await fetch('/api/predict', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ session_id: upload.session_id })
+                                }).then(r =&gt; r.json());</code>
+                              </pre>
+                            </article>
+                          </div>
+                        </section>
+                      </div>
+                    </main>
+                    <div class="toast" id="toast" role="status" aria-live="polite">
+                    </div>
+                  </body>
+                </html>

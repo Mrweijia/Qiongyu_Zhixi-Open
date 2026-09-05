@@ -1,0 +1,38 @@
+Qiongyu Zhixi — public-repository release notice
+Copyright 2026 Qiongyu Zhixi contributors
+
+This directory is a template for the separate clean public repository.  It
+does not license, publish, or alter the history of the private integration
+repository.
+
+License allocation
+------------------
+- Project-authored source code, configuration, documentation, and the
+  project-owned deployed model package are licensed under Apache License 2.0;
+  see LICENSE.
+- The project-generated synthetic pollution demonstration sample
+  (data/samples/pollution.csv) is licensed under Creative Commons Attribution
+  4.0 International; see DATA_LICENSE and retain
+  data/samples/SYNTHETIC_DATA.md.
+- data/samples/weather.csv is United States Government data from NOAA NCEI.
+  It is not relicensed by DATA_LICENSE. Retain this exact attribution:
+  "Source: NOAA National Centers for Environmental Information (NCEI), Integrated Surface Database."
+- The approved model package consists only of
+  models/checkpoints/multistep_v2/model.pt,
+  models/checkpoints/multistep_v2/scaler.npz, and
+  models/checkpoints/multistep_v2/manifest.json.  The manifest's training
+  data hashes are provenance only; they do not authorize redistribution of
+  the referenced real training corpora.
+
+Not included or licensed by these files
+----------------------------------------
+Do not add real pollution observations; CNEMC mirror archives; official
+documents or API snapshots; unapproved third-party payloads; research,
+superseded, smoke, or invalidated model artifacts; local runtime state;
+competition material; or src/models/wu.py and src/models/zhuyili.py.  The
+public-release asset manifest is the authoritative allowlist; copy only its
+approved assets and supporting paths, subject to its exclusions.
+
+Third-party material remains subject to its own terms.  This NOTICE is
+informational and does not modify Apache License 2.0, CC BY 4.0, or the
+rights in any third-party material.
