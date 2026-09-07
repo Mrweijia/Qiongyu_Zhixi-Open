@@ -1,0 +1,47 @@
+# 模型中心生命周期注册表（FLASH-06 / P0-03）
+# 生命周期只来自本显式注册表，不根据目录名或文件齐全自动推断。
+# 状态取值：deployed / approved_candidate / research_only / superseded / invalid
+# 未列出的目录一律视为 research_only，不允许出现在“可用”模型中。
+#
+# 依据：docs/reports/acceptance-2026-09-04.md 3.2 节与 docs/reports/model-experiments.md §4。
+# 当前只有 multistep_v2 是已批准并部署的模型；其余包即使文件齐全也只作
+# 历史/研究/作废展示，禁止出现“可用/可下载/可部署”按钮。
+# *_smoke 与旧 tgcn_*.pt 不进入注册表（_scan_manifest 已排除 smoke）。
+
+models:
+  multistep_v2:
+    lifecycle: deployed
+    note: "审计后部署包（模型哈希 818017da87b7），唯一当前部署模型"
+  multistep_2022_2026:
+    lifecycle: superseded
+    note: "与 multistep_v2 同一 run 的同哈希副本，对外只承认规范路径 multistep_v2"
+  multistep_v2_seed42:
+    lifecycle: superseded
+    note: "审计前历史结果，输入含旧时区处理，禁止进入正式材料"
+  multistep_v2_seed123:
+    lifecycle: superseded
+    note: "审计前历史结果，禁止进入正式材料"
+  ablation_no_attention:
+    lifecycle: superseded
+    note: "审计前消融产物，不得与审计后指标同表呈现"
+  ablation_single_expert:
+    lifecycle: superseded
+    note: "审计前消融产物，不得与审计后指标同表呈现"
+  ablation_static_adj:
+    lifecycle: superseded
+    note: "审计前消融产物，不得与审计后指标同表呈现"
+  wind_gated_tcn:
+    lifecycle: research_only
+    note: "修复风图符号后的 Wind-Gated TCN，缺 data_sha256，尚未完成同级验收"
+  wind_gated_tcn_seed42:
+    lifecycle: research_only
+    note: "Wind-Gated TCN 多种子研究产物，未验收"
+  wind_gated_tcn_seed123:
+    lifecycle: research_only
+    note: "Wind-Gated TCN 多种子研究产物，未验收"
+  causal_gat:
+    lifecycle: research_only
+    note: "Causal GAT，仅条件 Granger 有向预测图，未验收"
+  validation_blend:
+    lifecycle: invalid
+    note: "融合候选，缺 model.pt，包不完整"

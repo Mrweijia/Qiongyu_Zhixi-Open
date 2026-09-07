@@ -1,0 +1,144 @@
+{
+  "schema_version": 1,
+  "purpose": "GOV-01 source of truth for assets eligible for the clean public repository; GOV-02 must copy only listed paths and must still apply GOV-03 license files.",
+  "release_notice_template": {
+    "directory": "templates/public-repository",
+    "files": {
+      "code_and_weight_license": "templates/public-repository/LICENSE",
+      "data_license": "templates/public-repository/DATA_LICENSE",
+      "instructions": "templates/public-repository/README.md",
+      "attribution_and_exclusions": "templates/public-repository/NOTICE"
+    },
+    "rule": "GOV-02 copies LICENSE, DATA_LICENSE and NOTICE to the root of the new public repository without changing their legal text; these templates do not license the private integration repository."
+  },
+  "owner_decision": {
+    "date": "2026-09-05",
+    "self_code_and_weights_license": "Apache-2.0",
+    "self_public_data_license": "CC-BY-4.0",
+    "third_party_rule": "Do not redistribute unless this manifest explicitly lists the asset and its attribution obligation."
+  },
+  "approved_assets": [
+    {
+      "id": "synthetic-pollution-sample",
+      "path": "data/samples/pollution.csv",
+      "sha256": "637e8dd8205b18b5cd0ffd147aab2cd4c25b36b18c48fd488d3d754317951936",
+      "license": "CC-BY-4.0",
+      "origin": "Project-generated fixed-seed demonstration data; no real observations",
+      "attribution": "Qiongyu Zhixi contributors; retain data/samples/SYNTHETIC_DATA.md."
+    },
+    {
+      "id": "noaa-weather-sample",
+      "path": "data/samples/weather.csv",
+      "sha256": "b6d01a25c1c730f9c062ad8a396abbfc292f787eea28761fed422c221ab4fbe7",
+      "license": "United States Government data",
+      "origin": "NOAA NCEI ISD",
+      "attribution": "Source: NOAA National Centers for Environmental Information (NCEI), Integrated Surface Database."
+    },
+    {
+      "id": "deployed-multistep-model",
+      "path": "models/checkpoints/multistep_v2/model.pt",
+      "sha256": "818017da87b7f526987d4fa07cfbc0d499d075f06a3a187b29c14c72f509dfd3",
+      "license": "Apache-2.0",
+      "origin": "Project-owned deployed multistep_v2 weight approved by the owner",
+      "attribution": "Qiongyu Zhixi contributors; retain the paired manifest and model limitations."
+    },
+    {
+      "id": "deployed-multistep-scaler",
+      "path": "models/checkpoints/multistep_v2/scaler.npz",
+      "sha256": "3029e13057b842eb55149562ec1812f1700cc9bef43e2b8103e34029b3b4180e",
+      "license": "Apache-2.0",
+      "origin": "Paired artifact for the approved multistep_v2 weight",
+      "attribution": "Qiongyu Zhixi contributors; must be distributed only with the paired manifest."
+    },
+    {
+      "id": "deployed-multistep-manifest",
+      "path": "models/checkpoints/multistep_v2/manifest.json",
+      "sha256": "",
+      "license": "Apache-2.0",
+      "origin": "Machine-readable provenance for the approved multistep_v2 package",
+      "attribution": "Qiongyu Zhixi contributors; it records protocol, validation metrics and excluded training-data hashes."
+    }
+  ],
+  "approved_supporting_paths": [
+    "data/samples/SYNTHETIC_DATA.md",
+    "configs/model_registry.yaml",
+    "data/source/external/manifest_datasets.json",
+    "data/source/authoritative/manifest.json"
+  ],
+  "code_policy": {
+    "status": "eligible_after_GOV-03",
+    "rule": "Project-authored code may be selected by GOV-02, except the explicitly excluded files; third-party dependency licenses remain separate.",
+    "excluded_paths": [
+      "src/models/wu.py",
+      "src/models/zhuyili.py"
+    ]
+  },
+  "excluded_paths": [
+    {
+      "path": "data/cleaned/training/pollution_2022_2026.csv",
+      "reason": "Derived from CNEMC mirror data with unverified redistribution terms."
+    },
+    {
+      "path": "data/raw/pollution.csv",
+      "reason": "Real pollution observations; upstream redistribution terms are unverified."
+    },
+    {
+      "path": "data/source/national_air_quality/**",
+      "reason": "CNEMC mirror archives are not a recorded redistribution license."
+    },
+    {
+      "path": "data/source/authoritative/**",
+      "reason": "Official documents and API snapshots are cited by URL, not republished without specific terms."
+    },
+    {
+      "path": "data/source/external/**",
+      "reason": "Do not bulk-copy third-party source payloads; the two manifest files are separately approved as metadata."
+    },
+    {
+      "path": "models/checkpoints/multistep_2022_2026/**",
+      "reason": "Duplicate of canonical multistep_v2 package."
+    },
+    {
+      "path": "models/checkpoints/*_seed*/**",
+      "reason": "Superseded or research-only weights; not approved product releases."
+    },
+    {
+      "path": "models/checkpoints/ablation_*/**",
+      "reason": "Pre-audit artifacts with invalidated time handling."
+    },
+    {
+      "path": "models/checkpoints/wind_gated_tcn*/**",
+      "reason": "Research-only models without completed same-protocol acceptance."
+    },
+    {
+      "path": "models/checkpoints/causal_gat/**",
+      "reason": "Research-only model without complete data-hash provenance."
+    },
+    {
+      "path": "models/checkpoints/validation_blend/**",
+      "reason": "Invalid incomplete model package."
+    },
+    {
+      "path": "models/checkpoints/*_smoke/**",
+      "reason": "Local smoke artifacts are not releases."
+    },
+    {
+      "path": "archive/**",
+      "reason": "Private historical material, caches and invalidated artifacts."
+    },
+    {
+      "path": "match_message/**",
+      "reason": "Third-party competition material is not republished by the project."
+    },
+    {
+      "path": "outputs/runtime/**",
+      "reason": "Local runtime state."
+    }
+  ],
+  "required_release_checks": [
+    "Copy only approved assets and code selected under code_policy into a fresh directory; never clone or push this private history to open.",
+    "Reject absolute paths, __pycache__, runtime state and every excluded path after staging.",
+    "Keep mandatory NOAA NCEI attribution for weather.csv and the synthetic-data disclosure for pollution.csv.",
+    "Treat model manifest data hashes as provenance only: the referenced real training corpora remain excluded."
+  ]
+}

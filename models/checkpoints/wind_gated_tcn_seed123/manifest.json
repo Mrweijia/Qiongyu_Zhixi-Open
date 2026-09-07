@@ -1,0 +1,79 @@
+{
+  "run": "wind_gated_tcn_seed123",
+  "model_type": "wind_gated_tcn",
+  "feature_order": [
+    "PM2.5",
+    "PM10",
+    "SO2",
+    "NO2",
+    "O3",
+    "CO",
+    "tmp_C",
+    "wind_dir",
+    "wind_spd",
+    "rh"
+  ],
+  "stations": [
+    "1335A",
+    "1336A",
+    "1337A",
+    "1338A",
+    "1339A",
+    "1340A",
+    "1341A",
+    "1342A",
+    "1343A",
+    "1344A"
+  ],
+  "pred_names": [
+    "PM2.5",
+    "PM10",
+    "NO2",
+    "O3"
+  ],
+  "input_steps": 12,
+  "horizon": 3,
+  "config": {
+    "name": "wind_gated_tcn",
+    "seed": 123,
+    "device": "auto",
+    "input_steps": 12,
+    "horizon": 3,
+    "model": {
+      "type": "wind_gated_tcn",
+      "hidden": 64,
+      "kernel_size": 3,
+      "dilations": [
+        1,
+        2,
+        4
+      ],
+      "dropout": 0.1,
+      "use_dynamic_adj": true
+    },
+    "data": {
+      "pollution": "data/cleaned/training/pollution_2022_2026.csv",
+      "weather": "data/cleaned/training/weather_2022_2026.csv",
+      "max_gap_hours": 3,
+      "max_missing_frac": 0.25,
+      "train_ratio": 0.67,
+      "val_ratio": 0.11
+    },
+    "train": {
+      "epochs_max": 60,
+      "patience": 10,
+      "batch_size": 64,
+      "lr": 0.001,
+      "weight_decay": 0.0001,
+      "grad_clip": 5.0
+    },
+    "output": {
+      "experiment_dir": "outputs/experiments/wind_gated_tcn",
+      "bundle_dir": "models/checkpoints/wind_gated_tcn"
+    }
+  },
+  "git_commit": "a27d933dbf5895205715bd46de760f1c56224c3e",
+  "created_utc": "2026-09-02T16:34:12.114095+00:00",
+  "smoke": false,
+  "model_sha256": "c6543e9130ee27e5134c8833581abc7c999a320d4583eee9f92c18f9803b51a8"
+}

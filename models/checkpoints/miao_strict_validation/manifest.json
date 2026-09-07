@@ -1,0 +1,115 @@
+{
+  "model_id": "miao-strict-wind-tcn-v1",
+  "model_type": "wind_gated_tcn",
+  "smoke": false,
+  "capabilities": {
+    "model_id": "miao-strict-wind-tcn-v1",
+    "feature_order": [
+      "PM2.5",
+      "PM10",
+      "NO2",
+      "O3",
+      "tmp_C",
+      "wind_dir",
+      "wind_spd",
+      "rh"
+    ],
+    "input_steps": 12,
+    "horizons": [
+      1,
+      2,
+      3
+    ],
+    "max_missing_fraction": 0.02,
+    "max_consecutive_missing_hours": 0,
+    "allow_missing_station": false,
+    "allow_missing_feature": false
+  },
+  "stations": [
+    "1335A",
+    "1336A",
+    "1337A",
+    "1338A",
+    "1339A",
+    "1340A",
+    "1341A",
+    "1342A",
+    "1343A"
+  ],
+  "feature_order": [
+    "PM2.5",
+    "PM10",
+    "NO2",
+    "O3",
+    "tmp_C",
+    "wind_dir",
+    "wind_spd",
+    "rh"
+  ],
+  "pred_names": [
+    "PM2.5",
+    "PM10",
+    "NO2",
+    "O3"
+  ],
+  "architecture": {
+    "hidden": 24,
+    "horizon": 3,
+    "input_steps": 12,
+    "n_out": 4,
+    "dilations": [
+      1,
+      2
+    ],
+    "target_feature_indices": [
+      0,
+      1,
+      2,
+      3
+    ]
+  },
+  "artifact_sha256": {
+    "model.pt": "82016137292aa8dcbf4b34badc153eee1c29b808c2d7382c0af9c822f5c72ef3",
+    "scaler.npz": "1ec83362b76f96dde3c9612d26807064042597163c9f5457be9b91eba93cbf1e",
+    "validation_receipt.json": "c54ad97967888c59072a4f0d1e255ca2f9a6a6c67e4032a79fda4820bcbfea95"
+  },
+  "validation_receipt": {
+    "protocol_id": "miao-4poll-10s-12h-v1",
+    "eval_access_type": "validation",
+    "final_holdout_access": "forbidden",
+    "pipeline_revision": "2026-09-03-scientific-audit-v1",
+    "data_sha256": {
+      "pollution": "486efe51299c685e93d7e353a269f780d75ced377739f02dd13213564ed53c2e",
+      "weather": "f5e02ea059238ceb9a97881b7563eae3e34e87777edcc39a640026718250e47c"
+    },
+    "stations": [
+      "1335A",
+      "1336A",
+      "1337A",
+      "1338A",
+      "1339A",
+      "1340A",
+      "1341A",
+      "1342A",
+      "1343A"
+    ],
+    "feature_order": [
+      "PM2.5",
+      "PM10",
+      "NO2",
+      "O3",
+      "tmp_C",
+      "wind_dir",
+      "wind_spd",
+      "rh"
+    ],
+    "train_windows": 512,
+    "validation_windows": 128,
+    "validation_mse": 0.32437631487846375,
+    "persistence_validation_mse": 0.10438793897628784,
+    "min_relative_mse_improvement": 0.0,
+    "advance_to_long_training": false,
+    "limited_validation": true
+  },
+  "portability": "variable station count supported; cross-city accuracy unvalidated"
+}

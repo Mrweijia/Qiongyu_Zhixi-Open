@@ -1,0 +1,71 @@
+{
+  "model_type": "validation_convex_blend",
+  "fit_split": "validation",
+  "test_targets_used_for_fit": false,
+  "data": {
+    "pollution": "data/cleaned/training/pollution_2022_2026.csv",
+    "weather": "data/cleaned/training/weather_2022_2026.csv",
+    "max_gap_hours": 3,
+    "max_missing_frac": 0.25,
+    "train_ratio": 0.67,
+    "val_ratio": 0.11
+  },
+  "feature_order": [
+    "PM2.5",
+    "PM10",
+    "SO2",
+    "NO2",
+    "O3",
+    "CO",
+    "tmp_C",
+    "wind_dir",
+    "wind_spd",
+    "rh"
+  ],
+  "stations": [
+    "1335A",
+    "1336A",
+    "1337A",
+    "1338A",
+    "1339A",
+    "1340A",
+    "1341A",
+    "1342A",
+    "1343A",
+    "1344A"
+  ],
+  "pred_names": [
+    "PM2.5",
+    "PM10",
+    "NO2",
+    "O3"
+  ],
+  "input_steps": 12,
+  "horizon": 3,
+  "candidate_checkpoint_sha256": {
+    "wind_seed53": "2204c159f88724cedea79459582343806c3e78d7e3d51b42a4fa0980b1e8e0ee",
+    "wind_seed42": "62f042f904e7af4d6da47be21b2a0007ee047b176b2be601ecc0f5f835478aea",
+    "wind_seed123": "c6543e9130ee27e5134c8833581abc7c999a320d4583eee9f92c18f9803b51a8",
+    "causal_gat": "792db0b2181cb9ac51e70812c5c6290286697097f143e36625abdfabd97e94d7"
+  },
+  "lightgbm_model_sha256": {
+    "lightgbm_h1_NO2.joblib": "0754aefba7418c682ae458aa378d178fbf07d6bf3f941e57bb4765dc5b803b98",
+    "lightgbm_h1_O3.joblib": "f145abbf6eedbd2c379bceb594a194254ad014509aa184e15da2e32bd6699305",
+    "lightgbm_h1_PM10.joblib": "1e6fa7d25d8c8c3a4112ded1aeb07cd4b9c8b2122fe8f5bbf823265f9c8806e3",
+    "lightgbm_h1_PM2.5.joblib": "f1a6cf1b276cb4c8b01a603f2ddf15a05cb26d23392cc8d56ea61a69e37fd4a6",
+    "lightgbm_h2_NO2.joblib": "7186558aefd5f044f975d4e729f1ce6a89efcc580cbf439a81f7c3a899fab5bb",
+    "lightgbm_h2_O3.joblib": "125b1378ad8d9bfbd26cac200d0dc02f36847c17800207cc11e763196d46d70d",
+    "lightgbm_h2_PM10.joblib": "29a3c21141e4b21bc167430df04dbb31bcdc67cab568514d6bd19d57db623b1b",
+    "lightgbm_h2_PM2.5.joblib": "606ea976b93b1d5b85fa6915df737f5ae01d334bcacf53d8a595c69151cbc761",
+    "lightgbm_h3_NO2.joblib": "f2f42428f2f35079623f326b98bebfeac07a62a2c91e3eed1d27b35a8264db22",
+    "lightgbm_h3_O3.joblib": "915022ec14688680c4892b2b5eee16c6108f0aab5d82cd4d78c9621a3c7a3a29",
+    "lightgbm_h3_PM10.joblib": "e6f36479d1a887aeecc2749f02e87203a45353499d92d212c702cd020cd83e5d",
+    "lightgbm_h3_PM2.5.joblib": "7c46144bdf74f486bf76e3a1444b961aecb8b8f3296c9a0cb8f2d230f79b8e70"
+  },
+  "weights_sha256": "222b3694217b5f8e78b7e3ff00047284ca7c6a7229df6615d5487b75c68453de",
+  "scaler_sha256": "3ef89bb394f8b32800a3cfb2bdb9da89ff3fd7d7dd9137580e57549e54338dc6",
+  "metrics_path": "outputs/experiments/validation_blend/metrics.json",
+  "git_commit": "a27d933dbf5895205715bd46de760f1c56224c3e",
+  "created_utc": "2026-09-02T16:44:39.072757+00:00",
+  "smoke": false
+}

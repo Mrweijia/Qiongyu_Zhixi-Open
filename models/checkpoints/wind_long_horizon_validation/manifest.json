@@ -1,0 +1,106 @@
+{
+  "model_id": "wind-tcn-residual-long-validation-v1",
+  "model_type": "wind_gated_tcn",
+  "smoke": false,
+  "capabilities": {
+    "model_id": "wind-tcn-residual-long-validation-v1",
+    "feature_order": [
+      "PM2.5",
+      "PM10",
+      "NO2",
+      "O3",
+      "tmp_C",
+      "wind_dir",
+      "wind_spd",
+      "rh"
+    ],
+    "input_steps": 24,
+    "horizons": [
+      1,
+      3,
+      6,
+      12,
+      24
+    ],
+    "max_missing_fraction": 0.02,
+    "max_consecutive_missing_hours": 0,
+    "allow_missing_station": false,
+    "allow_missing_feature": false
+  },
+  "stations": [
+    "1335A",
+    "1336A",
+    "1337A",
+    "1338A",
+    "1339A",
+    "1340A",
+    "1341A",
+    "1342A",
+    "1343A"
+  ],
+  "feature_order": [
+    "PM2.5",
+    "PM10",
+    "NO2",
+    "O3",
+    "tmp_C",
+    "wind_dir",
+    "wind_spd",
+    "rh"
+  ],
+  "pred_names": [
+    "PM2.5"
+  ],
+  "architecture": {
+    "hidden": 24,
+    "horizon": 5,
+    "n_out": 1,
+    "dilations": [
+      1,
+      2,
+      4
+    ],
+    "target_feature_indices": [
+      0
+    ]
+  },
+  "validation_receipt": {
+    "protocol_id": "pm25-9s-24h-v1",
+    "eval_access_type": "validation",
+    "final_holdout_access": "forbidden",
+    "pipeline_revision": "2026-09-03-scientific-audit-v1",
+    "data_sha256": {
+      "pollution": "486efe51299c685e93d7e353a269f780d75ced377739f02dd13213564ed53c2e",
+      "weather": "f5e02ea059238ceb9a97881b7563eae3e34e87777edcc39a640026718250e47c"
+    },
+    "stations": [
+      "1335A",
+      "1336A",
+      "1337A",
+      "1338A",
+      "1339A",
+      "1340A",
+      "1341A",
+      "1342A",
+      "1343A"
+    ],
+    "feature_order": [
+      "PM2.5",
+      "PM10",
+      "NO2",
+      "O3",
+      "tmp_C",
+      "wind_dir",
+      "wind_spd",
+      "rh"
+    ],
+    "train_windows": 512,
+    "validation_windows": 128,
+    "validation_mse": 0.6040928959846497,
+    "persistence_validation_mse": 0.4020101726055145,
+    "min_relative_mse_improvement": 0.01,
+    "advance_to_long_training": false,
+    "limited_validation": true
+  },
+  "portability": "variable station count supported; cross-city accuracy unvalidated"
+}
